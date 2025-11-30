@@ -344,7 +344,7 @@ $lyric-font-size-small: 50px;
 
     &>div {
       @extend %box;
-      padding: 10px;
+      padding: 0 10px;
       box-sizing: border-box;
       width: 100%;
       background-color: var(--theme-color);
@@ -390,7 +390,6 @@ $lyric-font-size-small: 50px;
       flex-direction: column;
       justify-content: space-evenly;
       align-items: flex-start;
-      gap: 10px;
       font-size: $lyric-font-size-small;
       color: var(--text-color);
 

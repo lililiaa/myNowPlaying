@@ -103,7 +103,7 @@
             </div>
             <div class="page-content">
               <iframe
-                :src="item.url"
+                :data-src="item.url"
                 frameborder="0"
                 loading="lazy"
               ></iframe>
@@ -560,8 +560,45 @@ const reloadAll = () => {
     item.contentWindow.location.reload();
   });
 };
+// iframe懒加载
+const debounceTimers = new Map();
+const debounce = (fn, delay, key) => {
+  if (debounceTimers.has(key)) {
+    clearTimeout(debounceTimers.get(key));
+  }
+  const timer = setTimeout(() => {
+    fn();
+    debounceTimers.delete(key);
+  }, delay);
+  debounceTimers.set(key, timer);
+}
+const handleIntersection = (entries, observer) => {
+  entries.forEach((entry) => {
+    const iframe = entry.target.querySelector('iframe');
+    const containerIndex = Array.from(document.querySelectorAll('.page-container')).indexOf(entry.target);
+    if (entry.isIntersecting) {
+      // 进入视口
+      if (iframe) {
+        iframe.src = iframe.getAttribute('data-src');
+      }
+      if (debounceTimers.has(containerIndex)) {
+        clearTimeout(debounceTimers.get(containerIndex));
+        debounceTimers.delete(containerIndex);
+      }
+    } else {
+      // 离开视口
+      debounce(() => {
+        if (iframe) {
+          iframe.src = 'about:blank';
+        }
+      }, 3000, containerIndex);
+    }
+  });
+};
 
 onMounted(() => {
+  copied.value = [];
+  isRotating.value = [];
   pageList.forEach(item => {
     copied.value.push(false);
     isRotating.value.push(false);
@@ -569,6 +606,14 @@ onMounted(() => {
   if (!JSON.parse(localStorage.getItem('isCustomColor'))) {
     getImgColor();
   }
+  const observer = new IntersectionObserver(handleIntersection, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0,
+  });
+  document.querySelectorAll('.page-container').forEach((item) => {
+    observer.observe(item);
+  });
 });
 </script>
 <style lang="scss" scoped>
