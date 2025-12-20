@@ -66,11 +66,13 @@
                         v-if="!copied[index]"
                         src="../assets/icons/copy.svg"
                         alt="copy"
+                        class="fade"
                       >
                       <img
                         v-else
                         src="../assets/icons/success.svg"
                         alt="success"
+                        class="fade"
                       >
                     </transition>
                   </el-tooltip>
@@ -299,7 +301,7 @@
   </div>
 </template>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import router from '../router';
 import { ElMessage, ElTooltip, ElBacktop, ElMessageBox, ElInput, ElTag } from 'element-plus';
 import { Edit, Fold, Expand } from '@element-plus/icons-vue';
@@ -596,6 +598,32 @@ const handleIntersection = (entries, observer) => {
   });
 };
 
+const observerRef = ref(null);
+const observePageContainers = () => {
+  if (observerRef.value) {
+    document.querySelectorAll('.page-container').forEach(item => {
+      observerRef.value.unobserve(item);
+    });
+  }
+  const observer = new IntersectionObserver(handleIntersection, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0,
+  });
+  document.querySelectorAll('.page-container').forEach((item) => {
+    observer.observe(item);
+  });
+  observerRef.value = observer;
+};
+watch(
+  () => filterdPageList.value,
+  (newVal) => {
+    nextTick(() => {
+      observePageContainers();
+    })
+  }
+);
+
 onMounted(() => {
   copied.value = [];
   isRotating.value = [];
@@ -606,14 +634,21 @@ onMounted(() => {
   if (!JSON.parse(localStorage.getItem('isCustomColor'))) {
     getImgColor();
   }
-  const observer = new IntersectionObserver(handleIntersection, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-  });
-  document.querySelectorAll('.page-container').forEach((item) => {
-    observer.observe(item);
-  });
+  // const observer = new IntersectionObserver(handleIntersection, {
+  //   root: null,
+  //   rootMargin: '0px',
+  //   threshold: 0,
+  // });
+  // document.querySelectorAll('.page-container').forEach((item) => {
+  //   observer.observe(item);
+  // });
+  observePageContainers();
+});
+
+onUnmounted(() => {
+  if (observerRef.value) {
+    observerRef.value.disconnect();
+  }
 });
 </script>
 <style lang="scss" scoped>
