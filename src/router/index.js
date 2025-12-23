@@ -144,6 +144,26 @@ const routes = [
       type: 'combined',
     },
   },
+  {
+    path: '/card2',
+    name: '卡片2',
+    component: () => import('../pages/combined/card2.vue'),
+    meta: {
+      isPage: true,
+      title: '卡片2',
+      tags: [tagList.fixed],
+      type: 'combined',
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../pages/NotFound.vue'),
+    meta: {
+      isPage: false,
+      title: '404',
+    }
+  }
 ];
 
 // 创建路由实例

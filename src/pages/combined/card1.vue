@@ -41,7 +41,7 @@
           v-if="songStore.songData?.track?.title"
           :color="textColor"
           is-bold="bold"
-          font-size="50px"
+          font-size="55px"
           content-align="center"
         >
           {{ songStore.songData?.track?.title }}
@@ -49,7 +49,7 @@
         <overflow-text
           v-if="songStore.songData?.track?.author"
           :color="textColor"
-          font-size="40px"
+          font-size="45px"
           content-align="center"
         >
           {{ songStore.songData?.track?.author }}
@@ -227,7 +227,6 @@ onMounted(() => {
     width: 90%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
     // mask-image: linear-gradient(to right, rgba(0, 0, 0, 0), #000 10%, #000 90%, rgba(0, 0, 0, 0));
     font-size: 50px;
 
@@ -271,7 +270,7 @@ onMounted(() => {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      font-size: 30px;
+      font-size: 40px;
 
       .status {
         width: 80px;

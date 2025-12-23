@@ -593,7 +593,7 @@ const handleIntersection = (entries, observer) => {
         if (iframe) {
           iframe.src = 'about:blank';
         }
-      }, 3000, containerIndex);
+      }, 5000, containerIndex);
     }
   });
 };

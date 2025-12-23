@@ -41,7 +41,7 @@ const setMenuData = () => {
           router.push(route.path);
         },
       });
-    } else {
+    } else if (route.name !== 'NotFound') {
       menuData.items.push({
         label: route.meta.title,
         icon: "icon-yemian",
