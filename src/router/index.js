@@ -101,9 +101,9 @@ const routes = [
     },
   },
   {
-    path: '/home5',
-    name: 'Home5',
-    component: () => import('../pages/combined/Home5.vue'),
+    path: '/citiesSkylines1',
+    name: '都市天际线1',
+    component: () => import('../pages/combined/citiesSkylines1.vue'),
     meta: {
       isPage: true,
       title: '都市天际线1',
@@ -151,6 +151,17 @@ const routes = [
     meta: {
       isPage: true,
       title: '卡片2',
+      tags: [tagList.fixed],
+      type: 'combined',
+    }
+  },
+  {
+    path: '/simple',
+    name: '简约',
+    component: () => import('../pages/combined/simple.vue'),
+    meta: {
+      isPage: true,
+      title: '简约',
       tags: [tagList.fixed],
       type: 'combined',
     }

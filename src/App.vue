@@ -211,7 +211,7 @@ const songStore = useSongStore();
 if (window === window.parent) {
   window.songStore = songStore;
   watch(
-    () => songStore.songData?.track?.cover,
+    () => songStore.songData?.track?.title,
     (newVal, oldVal) => {
       if (newVal && (newVal !== oldVal)) {
         // 获取歌词信息
@@ -225,6 +225,7 @@ if (window === window.parent) {
     setMenuData();
     songStore.fetchSongData();
     intervalId = setInterval(songStore.fetchSongData, localStorage.getItem("queryTime") || 1000);
+    // songStore.connectWs();
   });
 
   onBeforeMount(() => {

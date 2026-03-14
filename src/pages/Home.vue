@@ -608,7 +608,7 @@ const observePageContainers = () => {
   const observer = new IntersectionObserver(handleIntersection, {
     root: null,
     rootMargin: '0px',
-    threshold: 0,
+    threshold: 0.0,
   });
   document.querySelectorAll('.page-container').forEach((item) => {
     observer.observe(item);

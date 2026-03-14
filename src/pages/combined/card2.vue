@@ -13,7 +13,7 @@
       <div class="cover">
         <transition
           v-show="songStore.songData?.track?.cover"
-          name="fade"
+          name="fade2"
           mode="default"
         >
           <img
@@ -31,25 +31,37 @@
         >
       </div>
       <div class="song-container">
-        <overflow-text
-          v-if="songStore.songData?.track?.title"
-          color="#5a5a77"
-          is-bold="bold"
-          font-size="55px"
-          content-align="center"
-          class="shadow-text"
+        <transition
+          name="fade"
+          mode="out-in"
         >
-          {{ songStore.songData?.track?.title }}
-        </overflow-text>
-        <overflow-text
-          v-if="songStore.songData?.track?.author"
-          color="#5a5a77"
-          font-size="45px"
-          content-align="center"
-          class="shadow-text"
+          <overflow-text
+            v-if="songStore.songData?.track?.title"
+            :key="songStore.songData?.track?.title"
+            color="#5a5a77"
+            is-bold="bold"
+            font-size="55px"
+            content-align="center"
+            class="shadow-text"
+          >
+            {{ songStore.songData?.track?.title }}
+          </overflow-text>
+        </transition>
+        <transition
+          name="fade"
+          mode="out-in"
         >
-          {{ songStore.songData?.track?.author }}
-        </overflow-text>
+          <overflow-text
+            v-if="songStore.songData?.track?.author"
+            :key="songStore.songData?.track?.author"
+            color="#5a5a77"
+            font-size="45px"
+            content-align="center"
+            class="shadow-text"
+          >
+            {{ songStore.songData?.track?.author }}
+          </overflow-text>
+        </transition>
         <span v-if="!songStore.songData?.track?.title && !songStore.songData?.track?.author">暂无歌曲信息</span>
       </div>
       <div class="status-container">
@@ -107,28 +119,28 @@ onMounted(() => {
 <style lang="scss" scoped>
 $text-color: #5a5a77;
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease, transform 1s ease;
+.fade2-enter-active,
+.fade2-leave-active {
+  transition: opacity 0.5s ease 0.3s, transform 2s ease 0.3s;
   transform-origin: 50% 0;
 }
 
-.fade-enter-from {
+.fade2-enter-from {
   opacity: 0;
   transform: translate(50px, -30px) rotate(-10deg);
 }
 
-.fade-leave-to {
+.fade2-leave-to {
   opacity: 1;
 }
 
-.fade-enter-active {
+.fade2-enter-active {
   position: absolute;
   width: 100%;
   height: 100%;
 }
 
-.fade-leave-active {
+.fade2-leave-active {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -148,6 +160,15 @@ $text-color: #5a5a77;
   transform: translateX(200%);
 }
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 .main {
   width: 650px;
