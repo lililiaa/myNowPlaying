@@ -134,6 +134,11 @@
         class="content-right-box"
         :class="isCollapse ? 'content-right-box-fold' : ''"
       >
+        <!-- 移动端抽屉顶部点击区域 -->
+        <div
+          class="drawer-handle"
+          @click="toggleCollapse"
+        ></div>
         <el-scrollbar
           v-if="!isCollapse"
           height="100%"
@@ -280,6 +285,7 @@
         </el-scrollbar>
         <div
           v-else
+          class="fold-content"
           @click="toggleCollapse"
         >
           <el-icon>
@@ -554,6 +560,20 @@ const isCollapse = ref(JSON.parse(localStorage.getItem('menuFold')) || false);
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value;
   localStorage.setItem('menuFold', JSON.stringify(isCollapse.value));
+
+  // 移动端：控制主页面滚动
+  if (window.innerWidth <= 768) {
+    const scrollbarWrap = leftScrollbarRef.value?.$el.querySelector('.el-scrollbar__wrap');
+    if (scrollbarWrap) {
+      if (!isCollapse.value) {
+        // 抽屉打开，禁止主页面滚动
+        scrollbarWrap.style.overflow = 'hidden';
+      } else {
+        // 抽屉关闭，恢复主页面滚动
+        scrollbarWrap.style.overflow = '';
+      }
+    }
+  }
 };
 // 重新加载所有iframe
 const reloadAll = () => {
@@ -634,15 +654,31 @@ onMounted(() => {
   if (!JSON.parse(localStorage.getItem('isCustomColor'))) {
     getImgColor();
   }
-  // const observer = new IntersectionObserver(handleIntersection, {
-  //   root: null,
-  //   rootMargin: '0px',
-  //   threshold: 0,
-  // });
-  // document.querySelectorAll('.page-container').forEach((item) => {
-  //   observer.observe(item);
-  // });
   observePageContainers();
+
+  // 移动端：初始化时检查抽屉状态
+  const handleDrawerScroll = () => {
+    if (window.innerWidth <= 768) {
+      const scrollbarWrap = leftScrollbarRef.value?.$el.querySelector('.el-scrollbar__wrap');
+      if (scrollbarWrap && !isCollapse.value) {
+        scrollbarWrap.style.overflow = 'hidden';
+      }
+    }
+  };
+  handleDrawerScroll();
+
+  // 监听窗口大小变化
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      // 切换到桌面端，恢复滚动
+      const scrollbarWrap = leftScrollbarRef.value?.$el.querySelector('.el-scrollbar__wrap');
+      if (scrollbarWrap) {
+        scrollbarWrap.style.overflow = '';
+      }
+    } else {
+      handleDrawerScroll();
+    }
+  });
 });
 
 onUnmounted(() => {
@@ -673,7 +709,7 @@ onUnmounted(() => {
       padding: 20px;
       display: grid;
       gap: 20px;
-      grid-template-columns: repeat(auto-fit, minmax(600px, auto));
+      grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
 
       .page-container {
         // width: 100%;
@@ -700,7 +736,6 @@ onUnmounted(() => {
           justify-content: space-between;
           align-items: center;
           gap: 10px;
-          align-items: center;
           color: #fff;
           background: #BE5869;
           background: -webkit-linear-gradient(to right, #BE5869, #c48791);
@@ -824,6 +859,11 @@ onUnmounted(() => {
       color: var(--text-color);
       font-size: 15px;
       transition: all 0.3s ease, width 0.5s ease;
+      position: relative;
+
+      .drawer-handle {
+        display: none; // 桌面端隐藏
+      }
 
       .content-right {
         display: flex;
@@ -923,6 +963,14 @@ onUnmounted(() => {
           cursor: pointer;
         }
       }
+
+      .fold-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
 
     .content-right-box-fold {
@@ -934,13 +982,287 @@ onUnmounted(() => {
       &:hover {
         box-shadow: 0 0 10px var(--shadow-color-hover);
       }
+    }
+  }
+}
 
-      div {
+// 移动端适配
+@media screen and (max-width: 768px) {
+  .main .content {
+    flex-direction: column;
+
+    .content-left {
+      padding: 10px;
+      grid-template-columns: 1fr !important;
+      gap: 15px;
+      padding-bottom: 60px; // 为底部抽屉留出空间
+
+      .page-container {
+        .page-header {
+          height: auto;
+          min-height: 45px;
+          padding: 10px;
+          flex-wrap: wrap;
+          gap: 10px;
+
+          .header-left {
+            flex: 1;
+            min-width: 0;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            .title-span {
+              font-size: 18px;
+            }
+
+            .tag-container {
+              margin-left: 0;
+              flex-wrap: wrap;
+
+              .el-tag {
+                font-size: 12px;
+                padding: 0 6px;
+                height: 22px;
+              }
+            }
+          }
+
+          i {
+            font-size: 22px;
+          }
+
+          img {
+            width: 26px;
+            height: 26px;
+          }
+
+          .page-header-btn {
+            gap: 10px;
+            flex-shrink: 0;
+
+            &>div {
+              height: 26px;
+            }
+          }
+        }
+
+        .page-content {
+          aspect-ratio: 16/9;
+        }
+      }
+    }
+
+    .back-top {
+      right: 20px !important;
+      bottom: 70px !important;
+    }
+
+    .content-right-box {
+      width: 100%;
+      height: 100%;
+      max-height: 70vh;
+      margin: 0;
+      border-radius: 16px 16px 0 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
+      background-color: var(--background-color);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+      transform: translateY(0); // 展开状态
+
+      .drawer-handle {
+        display: block; // 移动端显示
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 30px;
+        cursor: pointer;
+        z-index: 1;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 4px;
+          background-color: var(--shadow-color);
+          border-radius: 2px;
+          opacity: 0.5;
+          transition: opacity 0.3s ease;
+        }
+
+        &:active::before {
+          opacity: 0.8;
+        }
+      }
+
+      .content-right {
+        padding-top: 30px; // 为顶部拖拽条留空间
+
+        .title {
+          font-size: 18px;
+        }
+
+        .form-item {
+          span {
+            font-size: 14px;
+          }
+        }
+
+        &>div>div {
+          margin: 0 10px;
+          font-size: 14px;
+        }
+
+        .expand-btn {
+          display: none !important; // 移动端隐藏桌面端的折叠按钮
+        }
+      }
+    }
+
+    .content-right-box-fold {
+      width: 100%;
+      height: 30px;
+      margin: 0;
+      border-radius: 16px 16px 0 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
+      background-color: var(--background-color);
+      font-size: 20px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+      transform: translateY(calc(100% - 30px)); // 折叠状态，只露出顶部
+
+      .drawer-handle {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        cursor: pointer;
+        z-index: 1;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 4px;
+          background-color: var(--shadow-color);
+          border-radius: 2px;
+          opacity: 0.5;
+          transition: opacity 0.3s ease;
+        }
+
+        &:active::before {
+          opacity: 0.8;
+        }
+      }
+
+      &:active {
+        box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .fold-content {
+        padding: 10px 0;
+        pointer-events: none; // 让点击事件穿透到 drawer-handle
+        display: none; // 移动端隐藏 Fold 图标
+      }
+
+      .expand-btn {
+        display: none !important; // 移动端隐藏桌面端的折叠按钮
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .main .content {
+    .content-left {
+      padding: 8px;
+      gap: 12px;
+      padding-bottom: 60px;
+
+      .page-container {
+        .page-header {
+          height: auto;
+          min-height: 40px;
+          padding: 8px;
+          gap: 8px;
+
+          .header-left {
+            .title-span {
+              font-size: 16px;
+            }
+
+            .tag-container .el-tag {
+              font-size: 11px;
+              padding: 0 5px;
+              height: 20px;
+            }
+          }
+
+          i {
+            font-size: 20px;
+          }
+
+          img {
+            width: 24px;
+            height: 24px;
+          }
+
+          .page-header-btn {
+            gap: 8px;
+
+            &>div {
+              height: 24px;
+            }
+          }
+        }
+      }
+    }
+
+    .content-right-box {
+      max-height: 75vh;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
+
+      .content-right {
+        .title {
+          font-size: 16px;
+        }
+
+        .form-item span {
+          font-size: 13px;
+        }
+
+        &>div>div {
+          font-size: 13px;
+        }
+
+        .expand-btn {
+          display: none !important; // 移动端隐藏桌面端的折叠按钮
+        }
+      }
+    }
+
+    .content-right-box-fold {
+      height: 30px;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
+
+      .expand-btn {
+        display: none !important; // 移动端隐藏桌面端的折叠按钮
       }
     }
   }

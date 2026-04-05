@@ -239,4 +239,70 @@ onBeforeUnmount(() => {
     }
   }
 }
+
+// 移动端适配
+@media screen and (max-width: 768px) {
+  .header {
+    height: 50px;
+    padding: 0 15px;
+
+    .header-left {
+      gap: 10px;
+      font-size: 20px;
+
+      img {
+        width: 35px;
+        height: 35px;
+      }
+
+      span {
+        font-size: 18px;
+      }
+    }
+
+    .header-right {
+      gap: 8px;
+
+      .time {
+        font-size: 16px;
+        margin-right: 5px;
+      }
+
+      img {
+        width: 26px;
+        height: 26px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .header {
+    height: 45px;
+    padding: 0 10px;
+
+    .header-left {
+      gap: 8px;
+      font-size: 16px;
+
+      img {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .header-right {
+      gap: 6px;
+
+      .time {
+        display: none; // 小屏幕隐藏时间
+      }
+
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+}
 </style>

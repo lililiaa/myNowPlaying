@@ -5,7 +5,6 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import path from 'path'
 import legacy from '@vitejs/plugin-legacy'
-import postCssPxToRem from 'postcss-pxtorem'
 
 const repo = "myNowPlaying";
 const INVALID_CHAR_REGEX = /[\x00-\x1F\x7F<>*#"{}|^[\]`;?:&=+$,]/g;
@@ -54,6 +53,7 @@ export default defineConfig({
         additionalData: '@use "@/styles/variables.scss" as *;'
       }
     },
+    // 禁用 px 转 rem，使用原生 px 和媒体查询实现真正的响应式
     // postcss: {
     //   plugins: [
     //     postCssPxToRem({

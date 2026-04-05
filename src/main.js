@@ -6,7 +6,7 @@ import 'element-plus/dist/index.css'
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { createPinia } from 'pinia'
-// import 'amfe-flexible'
+// import 'amfe-flexible' // 禁用自动缩放，使用真正的响应式布局
 
 const pinia = createPinia();
 const app = createApp(App);
